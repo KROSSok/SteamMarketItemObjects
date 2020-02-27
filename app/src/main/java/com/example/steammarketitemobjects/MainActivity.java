@@ -57,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
         for (String item : itemNames) {
             Log.d(TAG, "Input TEXT - " + text);
             Log.d(TAG, "Items - " + item);
-            if (item.toLowerCase().contains(text.toLowerCase()) && item != null) {
-                filteredItems.add(item);
+            if(item != null) {
+                if (item.toLowerCase().contains(text.toLowerCase())) {
+                    filteredItems.add(item);
+                }
             }
         }
         recyclerAdapter.filterList(filteredItems);
