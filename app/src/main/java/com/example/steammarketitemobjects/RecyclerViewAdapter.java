@@ -2,7 +2,6 @@ package com.example.steammarketitemobjects;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemsViewHolder>{
 
     private ArrayList<String> mData;
-
+    private DetailsListener mListener;
     private Context mContext;
 
     class ItemsViewHolder extends RecyclerView.ViewHolder {
@@ -31,7 +30,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    public RecyclerViewAdapter(ArrayList<String> mData, Context mContext) {
+    public RecyclerViewAdapter(ArrayList<String> mData, Context mContext, DetailsListener mListener) {
+        this.mListener = mListener;
         this.mData = mData;
         this.mContext = mContext;
     }
@@ -47,7 +47,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(final RecyclerViewAdapter.ItemsViewHolder holder, final int position) {
         holder.itemNames.setText(mData.get(position));
-
         holder.parentLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -67,10 +66,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), ResultActivity.class);
-                intent.putExtra("name", mData.get(position));
-                intent.putExtra("item", getMarketItemData(mData.get(position), mContext));
-                v.getContext().startActivity(intent);
+                mListener.openDetails(v.getContext(), mData, position);
             }
         });
 
@@ -84,20 +80,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void filterList(ArrayList<String> filteredList) {
         mData = filteredList;
         notifyDataSetChanged();
-    }
-
-    private MarketItem getMarketItemData(String itemName, Context mContext){
-        MarketItem steamItem;
-        JsonDataParser jsonDataParser;
-        jsonDataParser = new JsonDataParser(mContext);
-        URLDataWriter urlDataWriter = new URLDataWriter();
-        try {
-            String url = jsonDataParser.getStringObject("multi_url");
-            steamItem = JsonDataParser.getDataByKey(urlDataWriter.execute(url+itemName).get());
-        } catch (Exception e) {
-            e.printStackTrace();
-            steamItem = null;
-        }
-        return steamItem;
     }
 }

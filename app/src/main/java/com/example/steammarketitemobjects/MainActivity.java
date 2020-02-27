@@ -5,22 +5,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DetailsListener{
 
     private static final String TAG = "MainActivity";
-
     private RecyclerViewAdapter recyclerAdapter;
     private ArrayList<String> itemNames;
 
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 filter(s.toString());
             }
         });
+
     }
 
     private void filter(String text) {
@@ -68,9 +68,17 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setHasFixedSize(true);
-        recyclerAdapter = new RecyclerViewAdapter(itemNames, this);
+        recyclerAdapter = new RecyclerViewAdapter(itemNames, this, this);
         recyclerView.setAdapter(recyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public void openDetails(Context context, ArrayList<String> mData, int position) {
+        Intent intent = new Intent(context, ResultActivity.class);
+        intent.putExtra("name", mData.get(position));
+        intent.putExtra("item", getMarketItemData(mData.get(position), context));
+        context.startActivity(intent);
     }
 
     private void getInitListItems() throws Exception{
@@ -84,7 +92,20 @@ public class MainActivity extends AppCompatActivity {
             }
         r.close();
         is.close();
-
     }
 
+    private MarketItem getMarketItemData(String itemName, Context mContext){
+        MarketItem steamItem;
+        JsonDataParser jsonDataParser;
+        jsonDataParser = new JsonDataParser(mContext);
+        URLDataWriter urlDataWriter = new URLDataWriter();
+        try {
+            String url = jsonDataParser.getStringObject("multi_url");
+            steamItem = JsonDataParser.getDataByKey(urlDataWriter.execute(url+itemName).get());
+        } catch (Exception e) {
+            e.printStackTrace();
+            steamItem = null;
+        }
+        return steamItem;
+    }
 }
