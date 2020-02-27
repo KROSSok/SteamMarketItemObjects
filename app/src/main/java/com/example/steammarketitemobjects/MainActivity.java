@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
     private void filter(String text) {
         ArrayList<String> filteredItems = new ArrayList<>();
         for (String item : itemNames) {
-            Log.d(TAG, "Input TEXT - " + text);
-            Log.d(TAG, "Items - " + item);
             if(item != null) {
                 if (item.toLowerCase().contains(text.toLowerCase())) {
                     filteredItems.add(item);
