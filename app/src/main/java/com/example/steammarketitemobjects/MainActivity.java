@@ -1,11 +1,9 @@
 package com.example.steammarketitemobjects;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -74,11 +72,11 @@ public class MainActivity extends AppCompatActivity implements DetailsListener{
     }
 
     @Override
-    public void openDetails(Context context, ArrayList<String> mData, int position) {
-        Intent intent = new Intent(context, ResultActivity.class);
-        intent.putExtra("name", mData.get(position));
-        intent.putExtra("item", getMarketItemData(mData.get(position), context));
-        context.startActivity(intent);
+    public void openDetails(String item) {
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra("name", item);
+        intent.putExtra("item", getMarketItemData(item));
+        this.startActivity(intent);
     }
 
     private void getInitListItems() throws Exception{
@@ -94,10 +92,10 @@ public class MainActivity extends AppCompatActivity implements DetailsListener{
         is.close();
     }
 
-    private MarketItem getMarketItemData(String itemName, Context mContext){
+    private MarketItem getMarketItemData(String itemName){
         MarketItem steamItem;
         JsonDataParser jsonDataParser;
-        jsonDataParser = new JsonDataParser(mContext);
+        jsonDataParser = new JsonDataParser(this);
         URLDataWriter urlDataWriter = new URLDataWriter();
         try {
             String url = jsonDataParser.getStringObject("multi_url");
