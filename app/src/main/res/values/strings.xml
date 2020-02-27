@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SteamMarketItemObjects</string>
+    <string name="url_hint">URL</string>
+    <string name="getUrl_button_name">GET URL</string>
+    <string name="progress_bar_text_hint">0%</string>
+    <string name="makeRequest_button_name">MAKE REQUEST</string>
+    <string name="data_hint">DATA</string>
+    <string name="search_view_title">Search item</string>
+</resources>
