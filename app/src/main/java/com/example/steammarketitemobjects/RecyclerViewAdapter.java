@@ -6,17 +6,20 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemsViewHolder>{
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ItemsViewHolder> implements Filterable {
 
     private ArrayList<String> mData;
     private DetailsListener mListener;
     private Context mContext;
+    private ArrayList<String> mDataSearch;
 
     class ItemsViewHolder extends RecyclerView.ViewHolder {
 
@@ -34,6 +37,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mListener = mListener;
         this.mData = mData;
         this.mContext = mContext;
+        mDataSearch = new ArrayList<>(mData);
     }
 
     @NonNull
@@ -78,8 +82,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return mData.size();
     }
 
-    public void filterList(ArrayList<String> filteredList) {
-        mData = filteredList;
-        notifyDataSetChanged();
+    @Override
+    public Filter getFilter() {
+        return dataFilter;
     }
+    private Filter dataFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<String> filteredItems = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0) {
+                filteredItems.addAll(mDataSearch);
+            } else {
+                String text = constraint.toString().toLowerCase().trim();
+                for(String item : mDataSearch){
+                    if(item != null) {
+                        if (item.toLowerCase().contains(text.toLowerCase())) {
+                            filteredItems.add(item);
+                        }
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredItems;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mData.clear();
+            mData.addAll((ArrayList) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
 }

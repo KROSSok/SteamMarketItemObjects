@@ -6,15 +6,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.EditText;
+import android.view.Menu;
+import android.widget.SearchView;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity implements DetailsListener{
 
@@ -33,33 +31,27 @@ public class MainActivity extends AppCompatActivity implements DetailsListener{
             e.printStackTrace();
         }
         getInitRecycleViewer();
-
-        EditText editText = findViewById(R.id.search);
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter(s.toString());
-            }
-        });
-
     }
 
-    private void filter(String text) {
-        ArrayList<String> filteredItems = new ArrayList<>();
-        for (String item : itemNames) {
-            if(item != null) {
-                if (item.toLowerCase().contains(text.toLowerCase())) {
-                    filteredItems.add(item);
-                }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        SearchView searchView = findViewById(R.id.action_search);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                recyclerAdapter.getFilter().filter(query);
+                return true;
             }
-        }
-        recyclerAdapter.filterList(filteredItems);
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText == null || newText.length() == 0) {
+                    recyclerAdapter.getFilter().filter(newText);
+                }
+                return false;
+            }
+        });
+        return true;
     }
 
     private void getInitRecycleViewer(){
